@@ -99,6 +99,13 @@ static const struct PhyRate phy_rates[] = {
 	{ 340000, 0x0040, 0x0003, 0x8039, 0x0005, 0x028d },
 };
 
+static void phy_i2c_init(void) {
+	/* The raw completion/error status uses these programmed polarities. */
+	hdmi_write(0x3027, 0x08);
+	hdmi_write(0x3028, 0x88);
+	hdmi_write(0x0108, 0xff);
+}
+
 static int phy_i2c_write(uint8_t address, uint16_t value) {
 	hdmi_write(0x0108, 0xff);
 	hdmi_write(0x3021, address);
@@ -126,6 +133,7 @@ static int hdmi_phy_setup(uint32_t clock_khz) {
 		if (clock_khz <= phy_rates[i].max_khz) { rate = &phy_rates[i]; break; }
 	if (!rate)
 		return -1;
+	phy_i2c_init();
 
 	/* The Gen2 PHY requires the complete setup sequence twice. */
 	for (unsigned int pass = 0; pass < 2; pass++) {
