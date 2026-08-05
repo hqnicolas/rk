@@ -3,6 +3,9 @@
 #include <string.h>
 #include "main.h"
 #include "firmware.h"
+#ifdef RK356X_USB_KEYBOARD
+#include "rk356x/input.h"
+#endif
 
 // Memory shared between EL2/EL3
 static uint8_t *shared_mem;
@@ -45,8 +48,19 @@ uint64_t process_firmware_call(uint64_t p1, uint64_t p2, uint64_t p3, uint64_t p
 		}
 		} return 0;
 	case FU_GET_CHAR:
-	case FU_POLL_CHAR:
+#ifdef RK356X_USB_KEYBOARD
+		input_poll();
+		return input_get_char();
+#else
 		return 0;
+#endif
+	case FU_POLL_CHAR:
+#ifdef RK356X_USB_KEYBOARD
+		input_poll();
+		return input_available();
+#else
+		return 0;
+#endif
 	}
 
 	uint64_t rc = plat_process_firmware_call(p1, p2, p3, p4);

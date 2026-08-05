@@ -1,7 +1,9 @@
 #ifndef PINE_BOOT
 #define PINE_BOOT
 
+#ifndef STACK_TOP
 #define STACK_TOP 0xc0000000
+#endif
 #define STACK_SIZE 0x10000
 // Stack pointer for EL2 payload (TODO: may conflict with firmware stack)
 #define STACK2_TOP (STACK_TOP - (STACK_SIZE / 2))
